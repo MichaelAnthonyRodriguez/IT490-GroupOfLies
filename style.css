@@ -1,0 +1,125 @@
+* {
+    font-family: sans-serif;
+    color: rgb(155, 130, 93);
+}
+body {
+    background-color: cornflowerblue;
+}
+header {
+    font-size: 20px;
+    display: flex;
+    align-items: left;
+    justify-content: space-between;
+    background-color: cornflowerblue;
+}
+h3 {  
+    margin-bottom: auto;
+}
+.menu {
+    float: right;
+}
+#logo {
+    width: 50px;
+    height: 50px;
+    margin: auto;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+a {
+    display: block;
+    float: left;
+    text-decoration: none;
+    margin: 9px;
+}
+:hover {
+    color: aqua;
+}
+body {
+    background-color: #1d1d1d;
+}
+hr {
+    height: 20px;
+    border-style: none;
+}
+#textbox {
+    margin: auto;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: cornflowerblue;
+    width: 80%;
+    border-radius: 20px;
+}
+#title {
+    margin: 15px;
+    text-align: center;
+    font-size: 20px;
+    background-color: #226175;
+}
+#product {
+    margin: 15px;
+    text-align: center;
+    background-color: #226175;
+    color: #226175;
+}
+figcaption {
+    padding: 10px;
+}
+img {
+    width: 300px;
+    border-radius: 30px;
+    padding: 10px;
+}
+footer {
+    text-align: center;
+}
+form {
+    text-align: right;
+    margin-right: 40vw;
+}
+input {
+    border-style: none;
+    margin: 10px;
+    color: #1d1d1d;
+}
+#submit {
+    margin-right: 10vw;
+}
+#labeled {
+    text-align: left;
+    margin-left: 30vw;
+}
+#choose {
+    color: #1d1d1d;
+}
+input.link {
+    margin: 0;
+    text-align: left;
+    color: rgb(155, 130, 93);
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    text-decoration: underline;
+    cursor: pointer;
+}
+form.link {
+    margin-right: 5px;
+}
+.link :hover {
+    color: aqua;
+}
+
+#img1 {
+    filter: blur(5px)
+}
+
+#img1:hover {
+    filter: brightness(250%);
+}
+
+#img2 {
+    filter: invert(100%);
+}
+
+#img2:hover {
+    filter: contrast(200%);
+}

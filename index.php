@@ -33,7 +33,7 @@
         <!-- main elements -->
         <main>
             <p>Secret Administrator User Manager</p>
-        <form action="send_message.php" method="POST">
+        <form action="app/send_message.php" method="POST">
             <label for="message">Enter Message:</label>
             <input type="text" id="message" name="message" required>
             <button type="submit">Send</button>

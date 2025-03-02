@@ -1,19 +1,34 @@
 <?php
-
 require_once __DIR__ . '/vendor/autoload.php';
+
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-$connection = new AMQPStreamConnection('100.105.162.20', 5672, 'webdev', 'password');
+// Connection details
+$host = '100.105.162.20';
+$port = 5672;
+$user = 'webdev';
+$password = 'password';
+$vhost = '/'; // default vhost, change if necessary
+
+// Establish a connection to RabbitMQ
+$connection = new AMQPStreamConnection($host, $port, $user, $password, $vhost);
 $channel = $connection->channel();
 
-$channel->queue_declare('hello', false, false, false, false);
+// Declare a durable queue named 'hello'
+$queue = 'hello';
+$channel->queue_declare($queue, false, true, false, false);
 
-$msg = new AMQPMessage('Hello World!');
-$channel->basic_publish($msg, '', 'hello');
+// Create the message you want to send
+$messageBody = 'Hello RabbitMQ from PHP!';
+$msg = new AMQPMessage($messageBody, array('delivery_mode' => 2)); // delivery_mode 2 makes it persistent
 
-echo " [x] Sent 'Hello World!'\n";
+// Publish the message to the queue
+$channel->basic_publish($msg, '', $queue);
 
+echo " [x] Sent '$messageBody'\n";
+
+// Close the channel and connection
 $channel->close();
 $connection->close();
 ?>

@@ -32,12 +32,12 @@
         </header>
         <!-- main elements -->
         <main>
-            <p>Secret Administrator User Manager</p>
-        <form action="app/send_message.php" method="POST">
-            <label for="message">Enter Message:</label>
-            <input type="text" id="message" name="message" required>
-            <button type="submit">Send</button>
-        </form>
+            <p>Register</p>
+            <form action="send_message.php" method="POST">
+                <label for="message">Enter Message:</label>
+                <input type="text" id="message" name="message" required>
+                <button type="submit">Send</button>
+            </form>
         
         </main>
         <hr>

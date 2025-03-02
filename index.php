@@ -33,22 +33,11 @@
         <!-- main elements -->
         <main>
             <p>Secret Administrator User Manager</p>
-            <form action="add_manager.php" method="post"
-              id="add_product_form">
-                <label>First Name:</label>
-                <input type="text" name="first"><br>
-
-                <label>Last Name:</label>
-                <input type="text" name="last"><br>
-
-                <label>Email:</label>
-                <input type="email" name="email"><br>
-
-                <label>Password:</label>
-                <input type="password" name="password"><br>
-
-                <input type="submit">
-            </form>
+        <form action="send_message.php" method="POST">
+            <label for="message">Enter Message:</label>
+            <input type="text" id="message" name="message" required>
+            <button type="submit">Send</button>
+        </form>
         
         </main>
         <hr>

@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
     <head>
         <title>Higher or Lower</title>
-        <link rel="stylesheet" href="app/static/style.css"/>
+        <link rel="stylesheet" href="static/style.css"/>
     </head>
     <body>
         <!-- header -->

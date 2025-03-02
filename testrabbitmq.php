@@ -7,7 +7,7 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 require_once __DIR__ . '/vendor/autoload.php';
 
 try {
-    $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+    $connection = new AMQPStreamConnection('localhost', 5672, 'webdev', 'password');
     echo "✅ Connected to RabbitMQ!";
     $connection->close();
 } catch (Exception $e) {

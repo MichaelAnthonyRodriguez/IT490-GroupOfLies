@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         try {
             // Connect to RabbitMQ
-            $connection = new AMQPStreamConnection('localhost', 5672, 'webdev', 'password');
+            $connection = new AMQPStreamConnection('100.105.162.20', 5672, 'webdev', 'password');
             $channel = $connection->channel();
 
             // Declare Queue

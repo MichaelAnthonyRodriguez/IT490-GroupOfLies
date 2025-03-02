@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>Higher or Lower</title>
-        <link rel="stylesheet" href="style.css"/>
+        <link rel="stylesheet" href="app/static/style.css"/>
     </head>
     <body>
         <!-- header -->

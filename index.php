@@ -6,39 +6,43 @@
     <body>
         <!-- header -->
         <header>
-            <img id="logo" src="images/logo.png"><h3>Higher or Lower</h3>
+            <img id="logo" src="images/logo.png">
+            <h3>Higher or Lower</h3>
             <nav class="menu">
                 <a href="index.php">Home</a>
                 <a href="register.php">Register</a>
                 <?php 
-                    if (isset($_SESSION['is_valid_admin'])==false){
-                        session_start();
-                    }
+                    session_start();
                     if (isset($_SESSION['is_valid_admin'])) { 
                 ?>
-                
-                <a href="highOrLow.php">Play</a>
-                <a href="logout.php">Logout</a>
-                <p><a>
-                    <?php
-                        // require_once('userData.php');
-                        // userData();
-                    ?>
-                </a></p>
+                    <a href="highOrLow.php">Play</a>
+                    <a href="logout.php">Logout</a>
+                    <p><a>
+                        <?php
+                            // require_once('userData.php');
+                            // userData();
+                        ?>
+                    </a></p>
                 <?php } else { ?>
-                <a href="login.php">Login</a>
+                    <a href="login.php">Login</a>
                 <?php } ?>              
             </nav>
         </header>
         <!-- main elements -->
         <main>
             <p>Register</p>
+            
+            <!-- Form to send a custom message -->
             <form action="send_message.php" method="POST">
                 <label for="message">Enter Message:</label>
                 <input type="text" id="message" name="message" required>
                 <button type="submit">Send</button>
             </form>
-        
+            
+            <!-- Button to send a default message without using the text field -->
+            <button onclick="window.location.href='send_message.php?message=DefaultMessage'">
+                Send Default Message
+            </button>
         </main>
         <hr>
         <hr>

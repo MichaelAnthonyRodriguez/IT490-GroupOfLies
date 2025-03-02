@@ -4,31 +4,41 @@ require_once __DIR__ . '/vendor/autoload.php';
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
-// Connection details
+// Use POST data if available, otherwise check for GET parameter
+if (isset($_POST['message'])) {
+    $messageText = htmlspecialchars($_POST['message']);
+} elseif (isset($_GET['message'])) {
+    $messageText = htmlspecialchars($_GET['message']);
+} else {
+    die("No message provided.");
+}
+
+// Connection details for RabbitMQ
 $host = '100.105.162.20';
 $port = 5672;
 $user = 'webdev';
 $password = 'password';
-$vhost = '/'; // default vhost, change if necessary
+$vhost = '/'; // Change if necessary
 
-// Establish a connection to RabbitMQ
-$connection = new AMQPStreamConnection($host, $port, $user, $password, $vhost);
-$channel = $connection->channel();
+try {
+    // Establish a connection to RabbitMQ
+    $connection = new AMQPStreamConnection($host, $port, $user, $password, $vhost);
+    $channel = $connection->channel();
 
-// Declare a durable queue named 'hello'
-$queue = 'hello';
-$channel->queue_declare($queue, false, true, false, false);
+    // Declare (and create if needed) a durable queue named 'hello'
+    $queue = 'hello';
+    $channel->queue_declare($queue, false, true, false, false);
 
-// Create the message you want to send
-$messageBody = 'Hello RabbitMQ from PHP!';
-$msg = new AMQPMessage($messageBody, array('delivery_mode' => 2)); // delivery_mode 2 makes it persistent
+    // Create and publish the message (delivery_mode 2 makes it persistent)
+    $msg = new AMQPMessage($messageText, array('delivery_mode' => 2));
+    $channel->basic_publish($msg, '', $queue);
 
-// Publish the message to the queue
-$channel->basic_publish($msg, '', $queue);
+    echo " [x] Sent '$messageText'\n";
 
-echo " [x] Sent '$messageBody'\n";
-
-// Close the channel and connection
-$channel->close();
-$connection->close();
+    // Close the channel and connection
+    $channel->close();
+    $connection->close();
+} catch (Exception $e) {
+    echo "Error sending message: " . $e->getMessage();
+}
 ?>

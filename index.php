@@ -38,11 +38,6 @@
                 <input type="text" id="message" name="message" required>
                 <button type="submit">Send</button>
             </form>
-            
-            <!-- Button to send a default message without using the text field -->
-            <button onclick="window.location.href='send_message.php?message=DefaultMessage'">
-                Send Default Message
-            </button>
         </main>
         <hr>
         <hr>

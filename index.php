@@ -30,14 +30,9 @@
         </header>
         <!-- main elements -->
         <main>
-            <p>Register</p>
-            
-            <!-- Form to send a custom message -->
-            <form action="send_message.php" method="POST">
-                <label for="message">Enter Message:</label>
-                <input type="text" id="message" name="message" required>
-                <button type="submit">Send</button>
-            </form>
+            <p>Welcome</p>
+            <a href="login.php">Login</a>
+            <a href="register.php">Register</a>
         </main>
         <hr>
         <hr>

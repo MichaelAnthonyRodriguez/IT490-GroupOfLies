@@ -40,13 +40,13 @@ $password = 'password';
 $vhost = '/';
 
 try {
-
+    $hash = password_hash($password, PASSWORD_DEFAULT);
     // Build the message as a JSON string
     $messageText = json_encode([
         "first"    => $first,
         "last"     => $last,
         "email"    => $email,
-        "password" => $password  // In production, never send or store plain text passwords!
+        "password" => $hash  // In production, never send or store plain text passwords!
     ]);
 
     // Establish a connection to RabbitMQ

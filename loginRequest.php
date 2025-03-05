@@ -36,10 +36,12 @@ try {
     $response = $client->send_request($request);
 
     if ($response["status"] === "success") {
-        $_SESSION['is_valid_admin'] = true;
-        $_SESSION['user'] = $user;
-        $_SESSION['session_token'] = $response['session_token'];
-        $_SESSION['user_id'] = $response['user_id'];
+      $_SESSION['is_valid_admin'] = true;
+      $_SESSION['username'] = $username;
+      $_SESSION['session_token'] = $response['session_token'];
+      $_SESSION['user_id'] = $response['user_id'];
+      $_SESSION['first_name'] = $response['first_name'];  // Store first name
+      $_SESSION['last_name'] = $response['last_name'];    // Store last name
 
         echo "login successful! Redirecting...</p>";
         header("refresh:2;url=highOrLow.php");

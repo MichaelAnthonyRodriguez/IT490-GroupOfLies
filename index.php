@@ -18,7 +18,7 @@ session_start();
                 <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true) { ?>
                     <a href="highOrLow.php">Play</a>
                     <a href="logout.php">Logout</a>
-                    <p>Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>!</p>
+                    <p>Welcome, <strong><?php htmlspecialchars($_SESSION['first_name'] . " " . $_SESSION['last_name']); ?></strong>!</p>
                 <?php } else { ?>
                     <a href="register.php">Register</a>
                     <a href="login.php">Login</a>

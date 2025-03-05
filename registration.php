@@ -52,6 +52,12 @@ try {
     $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
     $response = $client->send_request($request);
 
+    if ($response["status"] === "error") {
+        echo "<p style='color: red; font-weight: bold;'>" . htmlspecialchars($response["message"]) . "</p>";
+    } else {
+        echo "<p style='color: green; font-weight: bold;'>" . htmlspecialchars($response["message"]) . "</p>";
+    }
+
     echo "Response from server:\n";
     print_r($response);
 

@@ -33,7 +33,7 @@
             <p>Register</p>
             
             <!-- Form to send a custom message -->
-            <form action="send_message.php" method="POST">
+            <form action="registration.php" method="POST">
                 <label>First Name:</label>
                 <input type="text" name="first"><br>
 

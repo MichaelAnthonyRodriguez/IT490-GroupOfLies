@@ -38,7 +38,7 @@ validateInput($first, $last, $user, $email, $password);
 try {
     $hash = password_hash($password, PASSWORD_DEFAULT);
     
-    // Build the message as a JSON object
+    // Builds the message as a JSON object
     $request = [
         "type"     => "register",
         "first"    => $first,
@@ -48,7 +48,7 @@ try {
         "password" => $hash
     ];
 
-    // Send the request via RabbitMQ
+    // Sends the request via RabbitMQ
     $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
     $response = $client->publish($request);
 

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once('checkSession.php');
 ?>
 
 <html>
@@ -29,7 +30,6 @@ session_start();
         <!-- main elements -->
         <main>
             <p>Welcome to Higher or Lower!</p>
-                <p>You're logged in!</p>
         </main>
         
         <hr>

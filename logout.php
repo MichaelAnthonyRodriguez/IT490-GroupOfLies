@@ -4,39 +4,47 @@ require_once('rpc/path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
+// If the session does not exist, redirect to login
 if (!isset($_SESSION['session_token'])) {
-    echo "no active session found. Redirecting to login...";
-    header("refresh:2;url=login.php");
+    session_unset();
+    session_destroy();
+    setcookie(session_name(), '', time() - 42000, '/');
+    header("Location: login.php");
     exit();
 }
 
 try {
-    // Build logout request
+    // Send logout request to remove session from the database
     $request = [
         "type"          => "logout",
         "session_token" => $_SESSION['session_token']
     ];
 
-    // Send request via RabbitMQ
     $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
     $response = $client->send_request($request);
 
     if ($response["status"] === "success") {
-        echo "successfully logged out. Redirecting...</p>";
+        echo "Successfully logged out. Redirecting...";
     } else {
-        echo "logout failed: " . htmlspecialchars($response["message"]) . "</p>";
+        echo "Logout failed: " . htmlspecialchars($response["message"]);
     }
 
 } catch (Exception $e) {
-    echo "<p style='color: red;'>error logging out: " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "Error logging out: " . htmlspecialchars($e->getMessage());
 }
 
-$_SESSION = []; // Unset all session variables
-session_unset(); // Free session variables
-session_destroy(); // Destroy session
-setcookie(session_name(), '', time() - 42000, '/'); // Delete session cookie
+// Fully destroy the session
+$_SESSION = [];
+session_unset();
+session_destroy();
 
-// Redirect to login page after 2 seconds
-header("refresh:2;url=login.php");
+// Delete session cookie
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+}
+
+// Redirect to login page
+header("Location: login.php");
 exit();
 ?>

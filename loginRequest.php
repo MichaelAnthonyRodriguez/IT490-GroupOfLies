@@ -42,6 +42,7 @@ try {
       $_SESSION['user_id'] = $response['user_id'];
       $_SESSION['first_name'] = $response['first_name'];  // Store first name
       $_SESSION['last_name'] = $response['last_name'];    // Store last name
+      $_SESSION['login_time'] = time(); // Store session start time
 
         echo "login successful! Redirecting...</p>";
         header("refresh:2;url=index.php");

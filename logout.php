@@ -31,9 +31,10 @@ try {
     echo "<p style='color: red;'>error logging out: " . htmlspecialchars($e->getMessage()) . "</p>";
 }
 
-// Destroy local session
-session_unset();
-session_destroy();
+$_SESSION = []; // Unset all session variables
+session_unset(); // Free session variables
+session_destroy(); // Destroy session
+setcookie(session_name(), '', time() - 42000, '/'); // Delete session cookie
 
 // Redirect to login page after 2 seconds
 header("refresh:2;url=login.php");

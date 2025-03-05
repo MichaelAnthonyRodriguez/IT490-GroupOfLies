@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 require_once('rpc/path.inc');
 require_once('get_host_info.inc');
@@ -51,12 +51,6 @@ try {
     // Sends the request via RabbitMQ
     $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
     $response = $client->send_request($request);
-
-    if ($response["status"] === "error") {
-        echo "<p style='color: red; font-weight: bold;'>" . htmlspecialchars($response["message"]) . "</p>";
-    } else {
-        echo "<p style='color: green; font-weight: bold;'>" . htmlspecialchars($response["message"]) . "</p>";
-    }
 
     echo "Response from server:\n";
     print_r($response);

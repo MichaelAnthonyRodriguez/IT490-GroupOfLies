@@ -1,71 +1,57 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
-
-use PhpAmqpLib\Connection\AMQPStreamConnection;
-use PhpAmqpLib\Message\AMQPMessage;
+require_once('path.inc');
+require_once('get_host_info.inc');
+require_once('rabbitMQLib.inc');
 
 // Get the registration data
 $first = filter_input(INPUT_POST, 'first');
 $last = filter_input(INPUT_POST, 'last');
+$user = filter_input(INPUT_POST, 'user');
 $email = filter_input(INPUT_POST, 'email');
 $password = filter_input(INPUT_POST, 'password');
 
 // Validate inputs
-function validateInput($first, $last, $email, $password) {
-  
-    if ($first == NULL)
-    {
-      $error = "Invalid first name. Check all fields and try again.";
-      echo "$error <br>";
+function validateInput($first, $last, $user, $email, $password) {
+    if ($first == NULL) {
+        die("Error: Invalid first name.");
     }
-    elseif ($last == NULL)
-    {
-      $error = "Invalid last name. Check all fields and try again.";
-      echo "$error <br>";
+    if ($last == NULL) {
+        die("Error: Invalid last name.");
     }
-    elseif ($email == NULL)
-    {
-      $error = "Invalid last name. Check all fields and try again.";
-      echo "$error <br>";
+    if ($user == NULL) {
+        die("Error: Invalid username.");
+    }
+    if ($email == NULL) {
+        die("Error: Invalid email.");
+    }
+    if ($password == NULL) {
+        die("Error: Invalid password.");
     }
     echo "<p>Added Successfully</p>";
-  }
-validateInput($first, $last, $email, $password);
+}
 
-// Connection details for RabbitMQ
-$host = '100.105.162.20';
-$port = 5672;
-$user = 'webdev';
-$password = 'password';
-$vhost = '/';
+validateInput($first, $last, $user, $email, $password);
 
 try {
     $hash = password_hash($password, PASSWORD_DEFAULT);
-    // Build the message as a JSON string
-    $messageText = json_encode([
+    
+    // Build the message as a JSON object
+    $request = [
+        "type"     => "register",
         "first"    => $first,
         "last"     => $last,
+        "user"     => $user,
         "email"    => $email,
-        "password" => $hash  // In production, never send or store plain text passwords!
-    ]);
+        "password" => $hash
+    ];
 
-    // Establish a connection to RabbitMQ
-    $connection = new AMQPStreamConnection($host, $port, $user, $password, $vhost);
-    $channel = $connection->channel();
+    // Send the request via RabbitMQ
+    $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+    $response = $client->send_request($request);
 
-    // Declare (and create if needed) a durable queue named 'hello'
-    $queue = 'register';
-    $channel->queue_declare($queue, false, true, false, false);
+    echo "Response from server:\n";
+    print_r($response);
 
-    // Create and publish the message (delivery_mode 2 makes it persistent)
-    $msg = new AMQPMessage($messageText, array('delivery_mode' => 2));
-    $channel->basic_publish($msg, '', $queue);
-
-    echo " [x] Sent '$messageText'\n";
-
-    // Close the channel and connection
-    $channel->close();
-    $connection->close();
 } catch (Exception $e) {
     echo "Error sending message: " . $e->getMessage();
 }

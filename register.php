@@ -34,11 +34,14 @@
             
             <!-- Form to send a custom message -->
             <form action="send_message.php" method="POST">
-            <label>First Name:</label>
+                <label>First Name:</label>
                 <input type="text" name="first"><br>
 
                 <label>Last Name:</label>
                 <input type="text" name="last"><br>
+
+                <label>Username:</label>
+                <input type="text" name="user"><br>
 
                 <label>Email:</label>
                 <input type="email" name="email"><br>

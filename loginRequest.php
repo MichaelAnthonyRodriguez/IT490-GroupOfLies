@@ -7,7 +7,7 @@ require_once('rpc/path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
-$username = filter_input(INPUT_POST, 'user');
+$user = filter_input(INPUT_POST, 'user');
 $password = filter_input(INPUT_POST, 'password');
 
 // Validate inputs
@@ -40,7 +40,7 @@ try {
         $_SESSION['username'] = $username;
         $_SESSION['session_token'] = $response['session_token'];
         $_SESSION['user_id'] = $response['user_id'];
-        
+
         echo "login successful! Redirecting...</p>";
         header("refresh:2;url=highOrLow.php");
     } else {

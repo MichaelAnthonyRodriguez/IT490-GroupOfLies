@@ -47,7 +47,7 @@ try {
 
     // Send the request via RabbitMQ
     $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
-    $response = $client->send_request($request);
+    $response = $client->publish($request);
 
     echo "Response from server:\n";
     print_r($response);

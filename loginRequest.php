@@ -44,7 +44,7 @@ try {
       $_SESSION['last_name'] = $response['last_name'];    // Store last name
 
         echo "login successful! Redirecting...</p>";
-        header("refresh:2;url=highOrLow.php");
+        header("refresh:2;url=index.php");
     } else {
         echo "error " . htmlspecialchars($response["message"]) . "</p>";
     }

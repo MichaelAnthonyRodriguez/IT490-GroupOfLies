@@ -1,5 +1,4 @@
 <?php
-require_once('sessionValidator.php');
 session_start();
 require_once('rpc/path.inc');
 require_once('get_host_info.inc');

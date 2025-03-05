@@ -27,7 +27,7 @@ try {
     // Build the message as a JSON object
     $request = [
         "type"     => "login",
-        "username" => $username,
+        "user" => $user,
         "password" => $password
     ];
 
@@ -37,7 +37,7 @@ try {
 
     if ($response["status"] === "success") {
         $_SESSION['is_valid_admin'] = true;
-        $_SESSION['username'] = $username;
+        $_SESSION['user'] = $user;
         $_SESSION['session_token'] = $response['session_token'];
         $_SESSION['user_id'] = $response['user_id'];
 

@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <html>
     <head>
         <title>Higher or Lower</title>
@@ -10,33 +14,25 @@
             <h3>Higher or Lower</h3>
             <nav class="menu">
                 <a href="index.php">Home</a>
-                <a href="register.php">Register</a>
-                <?php 
-                    session_start();
-                    if (isset($_SESSION['is_valid_admin'])) { 
-                ?>
+
+                <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true) { ?>
                     <a href="highOrLow.php">Play</a>
                     <a href="logout.php">Logout</a>
-                    <p><a>
-                        <?php
-                            // require_once('userData.php');
-                            // userData();
-                        ?>
-                    </a></p>
+                    <p>Welcome, <strong><?php echo htmlspecialchars($_SESSION['username']); ?></strong>!</p>
                 <?php } else { ?>
+                    <a href="register.php">Register</a>
                     <a href="login.php">Login</a>
-                <?php } ?>              
+                <?php } ?>
             </nav>
         </header>
+
         <!-- main elements -->
         <main>
-            <p>Welcome</p>
-            <a href="login.php">Login</a>
-            <a href="register.php">Register</a>
+            <p>Welcome to Higher or Lower!</p>
+                <p>You're logged in!</p>
         </main>
-        <hr>
+        
         <hr>
         <footer></footer>
-        <hr>
     </body>
 </html>

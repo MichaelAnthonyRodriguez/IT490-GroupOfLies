@@ -16,21 +16,21 @@ $password = filter_input(INPUT_POST, 'password');
 // Validate inputs
 function validateInput($first, $last, $user, $email, $password) {
     if ($first == NULL) {
-        die("Error: Invalid first name.");
+        exit("Error: Invalid first name.");
     }
     if ($last == NULL) {
-        die("Error: Invalid last name.");
+        exit("Error: Invalid last name.");
     }
     if ($user == NULL) {
-        die("Error: Invalid username.");
+        exit("Error: Invalid username.");
     }
     if ($email == NULL) {
-        die("Error: Invalid email.");
+        exit("Error: Invalid email.");
     }
     if ($password == NULL) {
-        die("Error: Invalid password.");
+        exit("Error: Invalid password.");
     }
-    echo "<p>Added Successfully</p>";
+    // echo "<p>Added Successfully</p>";
 }
 
 validateInput($first, $last, $user, $email, $password);

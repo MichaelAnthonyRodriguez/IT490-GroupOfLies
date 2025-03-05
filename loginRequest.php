@@ -1,7 +1,7 @@
 <?php
 session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ini_set('display_errors', 1);
 
 require_once('rpc/path.inc');
 require_once('get_host_info.inc');

@@ -4,7 +4,7 @@ require_once('rpc/path.inc');
 require_once('get_host_info.inc');
 require_once('rabbitMQLib.inc');
 
-// If the session does not exist, redirect to login
+// If session does not exist, redirect to login
 if (!isset($_SESSION['session_token'])) {
     session_unset();
     session_destroy();

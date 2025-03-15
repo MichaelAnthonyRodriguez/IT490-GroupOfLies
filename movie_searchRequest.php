@@ -1,31 +1,25 @@
 <?php
 session_start();
 require_once 'vendor/autoload.php';
-require_once 'rabbitMQLib.inc';
+require_once 'rabbitMQLib.inc'; // RabbitMQ library
 
-// Make sure a tmdb_id is provided
-if (!isset($_GET['tmdb_id'])) {
-    die("Error: No movie specified.");
+// Retrieve and sanitize the movie title from the form.
+$movie_title = filter_input(INPUT_POST, 'movie_title', FILTER_SANITIZE_STRING);
+if (!$movie_title) {
+    die("Invalid movie title input.");
 }
-$tmdb_id = intval($_GET['tmdb_id']);
 
-// Build the RabbitMQ request for movie details
+// Build the request array for searching movies.
 $request = [
-    "type" => "movie_details",
-    "tmdb_id" => $tmdb_id
+    "type" => "search",
+    "movie_title" => $movie_title
 ];
 
-// Create a RabbitMQ client (using your testRabbitMQ.ini configuration, "testServer" queue)
+// Create a RabbitMQ client using your configuration.
 $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+
+// Send the request and capture the response.
 $response = $client->send_request($request);
-
-// Check for errors in the response
-if (!isset($response['status']) || $response['status'] !== 'success') {
-    die("Error fetching movie details: " . htmlspecialchars($response['message'] ?? "Unknown error"));
-}
-
-// Retrieve movie details from the response
-$movie = $response['movie'];
 ?>
 <html>
     <head>
@@ -52,16 +46,26 @@ $movie = $response['movie'];
             </nav>
         </header>
     <main>
-      <h2><?php echo htmlspecialchars($movie["title"]); ?></h2>
-      <!-- Display poster if available -->
-      <?php if (!empty($movie["poster_path"])): ?>
-          <img src="<?php echo htmlspecialchars($movie["poster_path"]); ?>" alt="<?php echo htmlspecialchars($movie["title"]); ?> Poster" style="max-width:300px;">
-      <?php else: ?>
-          <p>No poster available.</p>
-      <?php endif; ?>
-      <p><strong>Overview:</strong> <?php echo nl2br(htmlspecialchars($movie["overview"])); ?></p>
-      <p><strong>Release Date:</strong> <?php echo htmlspecialchars($movie["release_date"]); ?></p>
-      <p><strong>Average Rating:</strong> <?php echo htmlspecialchars($movie["vote_average"]); ?>/10</p>
+      <h2>Search Results for "<?php echo htmlspecialchars($movie_title); ?>"</h2>
+      <?php
+      if (isset($response["status"]) && $response["status"] === "success") {
+          if (isset($response["movies"]) && count($response["movies"]) > 0) {
+              echo "<ul>";
+              foreach ($response["movies"] as $movie) {
+                  // Each movie result is displayed as a link to movie_details.php with the tmdb_id as a GET parameter.
+                  echo "<li>";
+                  echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "'>" . htmlspecialchars($movie["title"]) . "</a>";
+                  echo " (" . htmlspecialchars($movie["release_date"]) . ")";
+                  echo "</li>";
+              }
+              echo "</ul>";
+          } else {
+              echo "<p>No movies found matching that title.</p>";
+          }
+      } else {
+          echo "<p>Error: " . htmlspecialchars($response["message"] ?? "Unknown error") . "</p>";
+      }
+      ?>
     </main>
     <footer></footer>
   </body>

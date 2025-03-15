@@ -1,33 +1,33 @@
 <?php
-//This page shows the details of a movie after clicking it
-?>
-<?php
-// Start session if needed and include the MySQL connection.
 session_start();
-require_once('mysqlconnect.php'); // Assumes $mydb is created here
+require_once 'vendor/autoload.php';
+require_once 'rabbitMQLib.inc';
 
-// Get the tmdb_id from the URL
+// Check if tmdb_id is provided via GET
 if (!isset($_GET['tmdb_id'])) {
     die("Error: No movie specified.");
 }
 $tmdb_id = intval($_GET['tmdb_id']);
 
-// Query the local database for movie details
-$query = "SELECT title, poster_path, overview, release_date, vote_average FROM movies WHERE tmdb_id = ?";
-$stmt = $mydb->prepare($query);
-if (!$stmt) {
-    die("Database error: " . $mydb->error);
-}
-$stmt->bind_param("i", $tmdb_id);
-$stmt->execute();
-$result = $stmt->get_result();
+// Build the request array for movie details.
+$request = [
+    "type"    => "movie_details",
+    "tmdb_id" => $tmdb_id
+];
 
-if ($result->num_rows === 0) {
-    die("Movie not found.");
+// Create a RabbitMQ client using your configuration.
+$client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+
+// Send the request and capture the response.
+$response = $client->send_request($request);
+
+// Check the response status.
+if (!isset($response['status']) || $response['status'] !== "success") {
+    die("Error retrieving movie details: " . htmlspecialchars($response['message'] ?? "Unknown error."));
 }
 
-$movie = $result->fetch_assoc();
-$stmt->close();
+// Retrieve movie details from the response.
+$movie = $response['movie'];
 ?>
 <html>
     <head>
@@ -55,15 +55,13 @@ $stmt->close();
         </header>
     <main>
       <h2><?php echo htmlspecialchars($movie["title"]); ?></h2>
-      <!-- Display the poster -->
-      <?php if(!empty($movie["poster_path"])): ?>
-        <img src="<?php echo htmlspecialchars($movie["poster_path"]); ?>" alt="<?php echo htmlspecialchars($movie["title"]); ?> Poster" style="max-width:300px;">
+      <!-- Display poster if available -->
+      <?php if (!empty($movie["poster_path"])): ?>
+          <img src="<?php echo htmlspecialchars($movie["poster_path"]); ?>" alt="<?php echo htmlspecialchars($movie["title"]); ?> Poster" style="max-width:300px;">
       <?php else: ?>
-        <p>No poster available.</p>
+          <p>No poster available.</p>
       <?php endif; ?>
-      
-      <!-- Display other details -->
-      <p><strong>Overview:</strong> <?php echo nl2br(htmlspecialchars($movie["overview"])); ?></p>
+      <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie["overview"])); ?></p>
       <p><strong>Release Date:</strong> <?php echo htmlspecialchars($movie["release_date"]); ?></p>
       <p><strong>Average Rating:</strong> <?php echo htmlspecialchars($movie["vote_average"]); ?>/10</p>
     </main>

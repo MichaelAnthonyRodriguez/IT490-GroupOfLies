@@ -28,6 +28,12 @@ if (!isset($response['status']) || $response['status'] !== "success") {
 
 // Retrieve movie details from the response.
 $movie = $response['movie'];
+
+// Construct the full poster URL if a poster path exists.
+$posterUrl = "";
+if (!empty($movie["poster_path"])) {
+    $posterUrl = "https://image.tmdb.org/t/p/w342" . $movie["poster_path"];
+}
 ?>
 <html>
     <head>
@@ -47,24 +53,24 @@ $movie = $response['movie'];
                     <a href="movie_trivia.php">Trivia</a>
                     <a href="logout.php">Logout</a>
                     <p>Welcome, <strong><?php echo htmlspecialchars($_SESSION['first_name'] . " " . $_SESSION['last_name']); ?></strong>!</p>
-                    <?php } else { ?>
+                <?php } else { ?>
                     <a href="register.php">Register</a>
                     <a href="login.php">Login</a>
                 <?php } ?>
             </nav>
         </header>
-    <main>
-      <h2><?php echo htmlspecialchars($movie["title"]); ?></h2>
-      <!-- Display poster if available -->
-      <?php if (!empty($movie["poster_path"])): ?>
-          <img src="<?php echo htmlspecialchars($movie["poster_path"]); ?>" alt="<?php echo htmlspecialchars($movie["title"]); ?> Poster" style="max-width:300px;">
-      <?php else: ?>
-          <p>No poster available.</p>
-      <?php endif; ?>
-      <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie["overview"])); ?></p>
-      <p><strong>Release Date:</strong> <?php echo htmlspecialchars($movie["release_date"]); ?></p>
-      <p><strong>Average Rating:</strong> <?php echo htmlspecialchars($movie["vote_average"]); ?>/10</p>
-    </main>
-    <footer></footer>
-  </body>
+        <main>
+          <h2><?php echo htmlspecialchars($movie["title"]); ?></h2>
+          <!-- Display poster if available -->
+          <?php if (!empty($posterUrl)): ?>
+              <img src="<?php echo htmlspecialchars($posterUrl); ?>" alt="<?php echo htmlspecialchars($movie["title"]); ?> Poster" style="max-width:300px;">
+          <?php else: ?>
+              <p>No poster available.</p>
+          <?php endif; ?>
+          <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie["overview"])); ?></p>
+          <p><strong>Release Date:</strong> <?php echo htmlspecialchars($movie["release_date"]); ?></p>
+          <p><strong>Average Rating:</strong> <?php echo htmlspecialchars($movie["vote_average"]); ?>/10</p>
+        </main>
+        <footer></footer>
+    </body>
 </html>

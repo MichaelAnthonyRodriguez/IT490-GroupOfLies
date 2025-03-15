@@ -37,7 +37,7 @@ try {
 
     if ($response["status"] === "success") {
       $_SESSION['is_valid_admin'] = true;
-      $_SESSION['username'] = $username;
+      $_SESSION['username'] = $user;
       $_SESSION['session_token'] = $response['session_token'];
       $_SESSION['user_id'] = $response['user_id'];
       $_SESSION['first_name'] = $response['first_name'];

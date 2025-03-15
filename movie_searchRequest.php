@@ -59,7 +59,7 @@ $response = $client->send_request($request);
                   echo "</li>";
               }
               echo "</ul>";
-              echo "<br>";
+              echo "<br></br>";
           } else {
               echo "<p>No movies found matching that title.</p>";
           }

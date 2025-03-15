@@ -23,7 +23,7 @@ $response = $client->send_request($request);
 ?>
 <html>
     <head>
-        <title>Cinemaniac</title>
+        <title>Cinemaniac - Search Results</title>
         <link rel="stylesheet" href="app/static/style.css"/>
     </head>
     <body>
@@ -39,35 +39,43 @@ $response = $client->send_request($request);
                     <a href="movie_trivia.php">Trivia</a>
                     <a href="logout.php">Logout</a>
                     <p>Welcome, <strong><?php echo htmlspecialchars($_SESSION['first_name'] . " " . $_SESSION['last_name']); ?></strong>!</p>
-                    <?php } else { ?>
+                <?php } else { ?>
                     <a href="register.php">Register</a>
                     <a href="login.php">Login</a>
                 <?php } ?>
             </nav>
         </header>
-    <main>
-      <h2>Search Results for "<?php echo htmlspecialchars($movie_title); ?>"</h2>
-      <?php
-      if (isset($response["status"]) && $response["status"] === "success") {
-          if (isset($response["movies"]) && count($response["movies"]) > 0) {
-              echo "<ul>";
-              foreach ($response["movies"] as $movie) {
-                  // Each movie result is displayed as a link to movie_details.php with the tmdb_id as a GET parameter.
-                  echo "<li>";
-                  echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "'>" . htmlspecialchars($movie["title"]) . "</a>";
-                  echo " (" . htmlspecialchars($movie["release_date"]) . ")";
-                  echo "</li>";
-                  echo "<br>";
-              }
-              echo "</ul>";
-          } else {
-              echo "<p>No movies found matching that title.</p>";
-          }
-      } else {
-          echo "<p>Error: " . htmlspecialchars($response["message"] ?? "Unknown error") . "</p>";
-      }
-      ?>
-    </main>
-    <footer></footer>
-  </body>
+        <main>
+            <h2>Results for "<?php echo htmlspecialchars($movie_title); ?>"</h2>
+            <?php
+            if (isset($response["status"]) && $response["status"] === "success") {
+                if (isset($response["movies"]) && count($response["movies"]) > 0) {
+                    echo "<ul style='list-style-type: none; padding: 0;'>";
+                    foreach ($response["movies"] as $movie) {
+                        // Construct the poster URL using w92 size.
+                        $posterUrl = "";
+                        if (!empty($movie['poster_path'])) {
+                            $posterUrl = "https://image.tmdb.org/t/p/w92" . $movie['poster_path'];
+                        }
+                        echo "<li style='margin-bottom: 15px;'>";
+                        // Display the poster thumbnail if available.
+                        if ($posterUrl) {
+                            echo "<img src='" . htmlspecialchars($posterUrl) . "' alt='Poster for " . htmlspecialchars($movie["title"]) . "' style='vertical-align: middle; margin-right: 10px;'>";
+                        }
+                        // Movie title as a hyperlink to movie_details.php with tmdb_id as a GET parameter.
+                        echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "' style='vertical-align: middle;'>" . htmlspecialchars($movie["title"]) . "</a>";
+                        echo " (" . htmlspecialchars($movie["release_date"]) . ")";
+                        echo "</li>";
+                    }
+                    echo "</ul>";
+                } else {
+                    echo "<p>No movies found matching that title.</p>";
+                }
+            } else {
+                echo "<p>Error: " . htmlspecialchars($response["message"] ?? "Unknown error") . "</p>";
+            }
+            ?>
+        </main>
+        <footer></footer>
+    </body>
 </html>

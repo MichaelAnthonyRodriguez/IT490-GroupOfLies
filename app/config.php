@@ -1,3 +1,0 @@
-<?php
-#Rabbitmq connection details
-?>

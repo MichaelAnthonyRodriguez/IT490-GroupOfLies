@@ -1,16 +1,16 @@
 * {
     font-family: sans-serif;
-    color: rgb(155, 130, 93);
+    color: rgb(231, 231, 231);
 }
 body {
-    background-color: cornflowerblue;
+    background-color: rgb(237, 100, 100);
 }
 header {
     font-size: 20px;
     display: flex;
     align-items: left;
     justify-content: space-between;
-    background-color: cornflowerblue;
+    background-color: rgb(237, 100, 100);
 }
 h3 {  
     margin-bottom: auto;
@@ -32,7 +32,7 @@ a {
     margin: 9px;
 }
 :hover {
-    color: aqua;
+    color: rgb(255, 163, 202);
 }
 body {
     background-color: #1d1d1d;
@@ -45,7 +45,7 @@ hr {
     margin: auto;
     margin-top: 10px;
     padding: 10px;
-    background-color: cornflowerblue;
+    background-color: rgb(237, 100, 100);
     width: 80%;
     border-radius: 20px;
 }
@@ -53,13 +53,13 @@ hr {
     margin: 15px;
     text-align: center;
     font-size: 20px;
-    background-color: #226175;
+    background-color: #752222;
 }
 #product {
     margin: 15px;
     text-align: center;
-    background-color: #226175;
-    color: #226175;
+    background-color: #752222;
+    color: #752222;
 }
 figcaption {
     padding: 10px;
@@ -94,7 +94,7 @@ input {
 input.link {
     margin: 0;
     text-align: left;
-    color: rgb(155, 130, 93);
+    color: rgb(231, 231, 231);
     background: none!important;
     border: none;
     padding: 0!important;
@@ -105,7 +105,7 @@ form.link {
     margin-right: 5px;
 }
 .link :hover {
-    color: aqua;
+    color: rgb(255, 65, 230);
 }
 
 #img1 {

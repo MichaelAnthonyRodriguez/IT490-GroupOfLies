@@ -23,28 +23,42 @@ $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
 $response = $client->send_request($request);
 ?>
 <html>
-  <head>
-    <title>Cinemaniac - Search Results</title>
-    <link rel="stylesheet" href="app/static/style.css"/>
-  </head>
-  <body>
-    <header>
-      <img id="logo" src="images/logo.png">
-      <h3>Cinemaniac</h3>
-      <nav class="menu">
-        <a href="movie_homepage.php">Home</a>
-        <a href="movie_watchlist.php">My Watchlist</a>
-        <a href="logout.php">Logout</a>
-      </nav>
-    </header>
+    <head>
+        <title>Cinemaniac</title>
+        <link rel="stylesheet" href="app/static/style.css"/>
+    </head>
+    <body>
+        <!-- header -->
+        <header>
+            <img id="logo" src="images/logo.png">
+            <h3>Cinemaniac</h3>
+            <nav class="menu">
+                <a href="movie_homepage.php">Home</a>
+                <a href="movie_search.php">Search</a>
+                <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true) { ?>
+                    <a href="movie_watchlist.php">My Watchlist</a>
+                    <a href="movie_trivia.php">Trivia</a>
+                    <a href="logout.php">Logout</a>
+                    <p>Welcome, <strong><?php echo htmlspecialchars($_SESSION['first_name'] . " " . $_SESSION['last_name']); ?></strong>!</p>
+                    <?php } else { ?>
+                    <a href="register.php">Register</a>
+                    <a href="login.php">Login</a>
+                <?php } ?>
+            </nav>
+        </header>
     <main>
       <h2>Results for "<?php echo htmlspecialchars($movie_title); ?>"</h2>
       <?php
-      if(isset($response["status"]) && $response["status"] === "success"){
-          if(isset($response["movies"]) && count($response["movies"]) > 0){
+      if (isset($response["status"]) && $response["status"] === "success") {
+          if (isset($response["movies"]) && count($response["movies"]) > 0) {
               echo "<ul>";
-              foreach($response["movies"] as $movie){
-                  echo "<li>" . htmlspecialchars($movie["title"]) . " (" . htmlspecialchars($movie["release_date"]) . ")</li>";
+              foreach ($response["movies"] as $movie) {
+                  // Create a hyperlink that sends tmdb_id as a GET parameter to movie_details.php
+                  echo "<li>";
+                  echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "'>";
+                  echo htmlspecialchars($movie["title"]);
+                  echo "</a> (" . htmlspecialchars($movie["release_date"]) . ")";
+                  echo "</li>";
               }
               echo "</ul>";
           } else {

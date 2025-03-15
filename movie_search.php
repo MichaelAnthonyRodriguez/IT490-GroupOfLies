@@ -18,6 +18,7 @@ session_start();
             <h3>Cinemaniac</h3>
             <nav class="menu">
                 <a href="movie_homepage.php">Home</a>
+                <a href="movie_search.php">Search</a>
                 <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true) { ?>
                     <a href="movie_watchlist.php">My Watchlist</a>
                     <a href="movie_trivia.php">Trivia</a>
@@ -33,7 +34,7 @@ session_start();
         <!-- main elements -->
         <main>
             <form action="movie_searchRequest.php" method="POST">
-                <label for="movie_title">Movie Title:</label>
+                <label for="movie_title">Search Movies:</label>
                 <input type="text" name="movie_title" id="movie_title" required>
                 <input type="submit" value="Search">
             </form>

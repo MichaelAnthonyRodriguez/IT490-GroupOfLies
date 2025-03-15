@@ -10,6 +10,7 @@
             <h3>Cinemaniac</h3>
             <nav class="menu">
                 <a href="movie_homepage.php">Home</a>
+                <a href="movie_search.php">Search</a>
                 <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true) { ?>
                     <a href="movie_watchlist.php">My Watchlist</a>
                     <a href="movie_trivia.php">Trivia</a>

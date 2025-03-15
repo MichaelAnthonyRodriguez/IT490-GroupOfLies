@@ -57,9 +57,9 @@ $response = $client->send_request($request);
                   echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "'>" . htmlspecialchars($movie["title"]) . "</a>";
                   echo " (" . htmlspecialchars($movie["release_date"]) . ")";
                   echo "</li>";
+                  echo "<br>";
               }
               echo "</ul>";
-              echo "<br></br>";
           } else {
               echo "<p>No movies found matching that title.</p>";
           }

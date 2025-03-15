@@ -58,7 +58,8 @@ $response = $client->send_request($request);
                   echo " (" . htmlspecialchars($movie["release_date"]) . ")";
                   echo "</li>";
               }
-              echo "</br>";
+              echo "</ul>";
+              echo "<br>";
           } else {
               echo "<p>No movies found matching that title.</p>";
           }

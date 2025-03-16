@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer'])) {
         $client->send_request($updateRequest);
         $_SESSION['trivia_score'] = 0;
         // Redirect to reload the page with a feedback message.
-        header("Location: trivia.php?feedback=" . urlencode("Game Over! Final Score: $finalScore"));
+        header("Location: movie_trivia.php?feedback=" . urlencode("Game Over! Final Score: $finalScore"));
         exit();
     }
 }
@@ -107,7 +107,7 @@ $options = $movie['options'];
           <p><?php echo htmlspecialchars($_GET['feedback']); ?></p>
       <?php endif; ?>
       <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie['overview'])); ?></p>
-      <form method="POST" action="trivia.php">
+      <form method="POST" action="movie_trivia.php">
         <div class="options">
           <?php foreach ($options as $option): ?>
             <button class="option" type="submit" name="answer" value="<?php echo htmlspecialchars($option); ?>">

@@ -57,7 +57,7 @@ $response = $client->send_request($request);
                         if (!empty($movie['poster_path'])) {
                             $posterUrl = "https://image.tmdb.org/t/p/w92" . $movie['poster_path'];
                         }
-                        echo "<li style='margin-bottom: 15px;'>";
+                        echo "<li>";
                         // Display the poster thumbnail if available.
                         if ($posterUrl) {
                             echo "<img src='" . htmlspecialchars($posterUrl) . "' alt='Poster for " . htmlspecialchars($movie["title"]) . "' style='vertical-align: left; margin-right: 10px;'>";

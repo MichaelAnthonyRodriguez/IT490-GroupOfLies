@@ -65,9 +65,9 @@ $response = $client->send_request($request);
                         // Movie title as a hyperlink to movie_details.php with tmdb_id as a GET parameter.
                         echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "' style='vertical-align: middle;'>" . htmlspecialchars($movie["title"]) . "</a>";
                         echo " (" . htmlspecialchars($movie["release_date"]) . ")";
-                        echo "<br>";
                     }
                     echo "</ul>";
+                    echo "<br>";
                 } else {
                     echo "<p>No movies found matching that title.</p>";
                 }

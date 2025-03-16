@@ -53,22 +53,6 @@ if (!isset($response['status']) || $response['status'] !== "success") {
 }
 $movie = $response['movie'];
 
-// Check if the overview is empty. Try up to 5 times.
-$maxAttempts = 5;
-$attempt = 0;
-while (empty(trim($movie['overview'])) && $attempt < $maxAttempts) {
-    $response = $client->send_request($triviaRequest);
-    if (!isset($response['status']) || $response['status'] !== "success") {
-        die("Error retrieving trivia movie: " . htmlspecialchars($response['message'] ?? "Unknown error."));
-    }
-    $movie = $response['movie'];
-    $attempt++;
-}
-// If still empty after attempts, set a default message.
-if (empty(trim($movie['overview']))) {
-    $movie['overview'] = "No overview available for this movie.";
-}
-
 // Save correct title for checking answer.
 $_SESSION['correct_title'] = $movie['title'];
 // Options: an array containing one correct title and three incorrect titles.
@@ -79,66 +63,45 @@ $options = $movie['options'];
     <head>
         <title>Cinemaniac</title>
         <link rel="stylesheet" href="app/static/style.css"/>
-        <style>
-          /* Simple styling for the trivia container */
-          .container {
-              max-width: 800px;
-              margin: 20px auto;
-              padding: 20px;
-              background-color: #333;
-              border-radius: 8px;
-              text-align: center;
-          }
-          .options {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              gap: 10px;
-              margin-top: 20px;
-          }
-          .option {
-              background-color: #555;
-              color: #E7E7E7;
-              padding: 10px 20px;
-              border: none;
-              border-radius: 5px;
-              cursor: pointer;
-              font-size: 16px;
-              width: 80%;
-          }
-          .option:hover {
-              background-color: #777;
-          }
-        </style>
     </head>
     <body>
-        <div class="container">
-            <h1>Movie Trivia</h1>
-            <h2>High Score: <?php 
-                // Request and display the user's trivia highscore.
-                $highscoreRequest = [
-                    "type"    => "get_trivia_highscore",
-                    "user_id" => $user_id
-                ];
-                $highscoreResponse = $client->send_request($highscoreRequest);
-                echo isset($highscoreResponse['status']) && $highscoreResponse['status'] === "success" 
-                    ? htmlspecialchars($highscoreResponse['trivia_highscore']) 
-                    : "N/A"; 
-            ?></h2>
-            <h2>Score: <?php echo $_SESSION['trivia_score']; ?></h2>
-            <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie['overview'])); ?></p>
-            <form method="POST" action="movie_trivia.php">
-                <div class="options">
-                    <?php foreach ($options as $option): ?>
-                        <button class="option" type="submit" name="answer" value="<?php echo htmlspecialchars($option); ?>">
-                            <?php echo htmlspecialchars($option); ?>
-                        </button>
-                    <?php endforeach; ?>
-                </div>
-            </form>
-            <?php if (isset($feedback)): ?>
-                <p><?php echo $feedback; ?></p>
-            <?php endif; ?>
+        <!-- header -->
+        <header>
+            <img id="logo" src="images/logo.png">
+            <h3>Cinemaniac</h3>
+            <nav class="menu">
+                <a href="movie_homepage.php">Home</a>
+                <a href="movie_search.php">Search</a>
+                <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true) { ?>
+                    <a href="movie_watchlist.php">My Watchlist</a>
+                    <a href="movie_trivia.php">Trivia</a>
+                    <a href="logout.php">Logout</a>
+                    <p>Welcome, <strong><?php echo htmlspecialchars($_SESSION['first_name'] . " " . $_SESSION['last_name']); ?></strong>!</p>
+                    <?php } else { ?>
+                    <a href="register.php">Register</a>
+                    <a href="login.php">Login</a>
+                <?php } ?>
+            </nav>
+        </header>
+  <body>
+    <div class="container">
+      <h1>Movie Trivia</h1>
+      <h2>Score: <?php echo $_SESSION['trivia_score']; ?></h2>
+      <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie['overview'])); ?></p>
+      
+      <form method="POST" action="movie_trivia.php">
+        <div class="options">
+          <?php foreach ($options as $option): ?>
+            <button class="option" type="submit" name="answer" value="<?php echo htmlspecialchars($option); ?>">
+              <?php echo htmlspecialchars($option); ?>
+            </button>
+            <br />
+          <?php endforeach; ?>
         </div>
-    </body>
+      </form>
+      <?php if(isset($feedback)): ?>
+        <p><?php echo $feedback; ?></p>
+      <?php endif; ?>
+    </div>
+  </body>
 </html>

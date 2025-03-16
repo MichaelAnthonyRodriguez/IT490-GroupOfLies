@@ -1,6 +1,10 @@
 * {
     font-family: sans-serif;
     color: rgb(231, 231, 231);
+    display: block;
+    float: left;
+    text-decoration: none;
+    margin: 9px;
 }
 body {
     background-color: rgb(237, 100, 100);

@@ -60,7 +60,7 @@ $response = $client->send_request($request);
                         echo "<li style='margin-bottom: 15px;'>";
                         // Display the poster thumbnail if available.
                         if ($posterUrl) {
-                            echo "<img src='" . htmlspecialchars($posterUrl) . "' alt='Poster for " . htmlspecialchars($movie["title"]) . "' style='vertical-align: middle; margin-right: 10px;'>";
+                            echo "<img src='" . htmlspecialchars($posterUrl) . "' alt='Poster for " . htmlspecialchars($movie["title"]) . "' style='vertical-align: left; margin-right: 10px;'>";
                         }
                         // Movie title as a hyperlink to movie_details.php with tmdb_id as a GET parameter.
                         echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "' style='vertical-align: middle;'>" . htmlspecialchars($movie["title"]) . "</a>";

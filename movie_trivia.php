@@ -47,11 +47,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer'])) {
 $triviaRequest = [
     "type" => "get_trivia_movie"
 ];
-$response = $client->send_request($triviaRequest);
-if (!isset($response['status']) || $response['status'] !== "success") {
-    die("Error retrieving trivia movie: " . htmlspecialchars($response['message'] ?? "Unknown error."));
+
+// Attempt to get a movie with a non-empty overview.
+$maxAttempts = 10;
+$attempt = 0;
+do {
+    $response = $client->send_request($triviaRequest);
+    if (!isset($response['status']) || $response['status'] !== "success") {
+        die("Error retrieving trivia movie: " . htmlspecialchars($response['message'] ?? "Unknown error."));
+    }
+    $movie = $response['movie'];
+    $attempt++;
+} while(empty(trim($movie['overview'])) && $attempt < $maxAttempts);
+
+if(empty(trim($movie['overview']))) {
+    die("No valid trivia movie found with an overview after several attempts.");
 }
-$movie = $response['movie'];
 
 // Save correct title for checking answer.
 $_SESSION['correct_title'] = $movie['title'];
@@ -61,47 +72,47 @@ $options = $movie['options'];
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Cinemaniac</title>
+        <title>Cinemaniac Trivia</title>
         <link rel="stylesheet" href="app/static/style.css"/>
+        <style>
+            /* Example styling for trivia page */
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #333;
+                border-radius: 8px;
+                text-align: center;
+            }
+            .options {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            .option {
+                background-color: #555;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                color: #E7E7E7;
+                font-size: 16px;
+            }
+            .option:hover {
+                background-color: #777;
+            }
+        </style>
     </head>
     <body>
-        <!-- header -->
-        <header>
-            <img id="logo" src="images/logo.png">
-            <h3>Cinemaniac</h3>
-            <nav class="menu">
-                <a href="movie_homepage.php">Home</a>
-                <a href="movie_search.php">Search</a>
-                <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true) { ?>
-                    <a href="movie_watchlist.php">My Watchlist</a>
-                    <a href="movie_trivia.php">Trivia</a>
-                    <a href="logout.php">Logout</a>
-                    <p>Welcome, <strong><?php echo htmlspecialchars($_SESSION['first_name'] . " " . $_SESSION['last_name']); ?></strong>!</p>
-                    <?php } else { ?>
-                    <a href="register.php">Register</a>
-                    <a href="login.php">Login</a>
-                <?php } ?>
-            </nav>
-        </header>
-  <body>
-    <div class="container">
-      <h1>Movie Trivia</h1>
-      <h2>Score: <?php echo $_SESSION['trivia_score']; ?></h2>
-      <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie['overview'])); ?></p>
-      <br />
-      <form method="POST" action="movie_trivia.php">
-        <div class="options">
-          <?php foreach ($options as $option): ?>
-            <button class="option" type="submit" name="answer" value="<?php echo htmlspecialchars($option); ?>">
-              <?php echo htmlspecialchars($option); ?>
-            </button>
-            <br />
-          <?php endforeach; ?>
-        </div>
-      </form>
-      <?php if(isset($feedback)): ?>
-        <p><?php echo $feedback; ?></p>
-      <?php endif; ?>
-    </div>
-  </body>
-</html>
+        <div class="container">
+            <h1>Movie Trivia</h1>
+            <h2>Score: <?php echo $_SESSION['trivia_score']; ?></h2>
+            <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie['overview'])); ?></p>
+            <form method="POST" action="movie_trivia.php">
+                <div class="options">
+                    <?php foreach ($options as $option): ?>
+                        <button class="option" type="submit" name="answer" value="<?php echo htmlspecialchars($option); ?>">
+                            <?php echo htmlspecialchars($option); ?>
+                        </button>
+                    <?

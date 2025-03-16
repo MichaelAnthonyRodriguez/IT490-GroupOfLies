@@ -94,6 +94,7 @@ $options = $movie['options'];
             <button class="option" type="submit" name="answer" value="<?php echo htmlspecialchars($option); ?>">
               <?php echo htmlspecialchars($option); ?>
             </button>
+            <br />
           <?php endforeach; ?>
         </div>
       </form>

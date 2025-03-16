@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
     $action = $_POST['action'] ?? "";
     
     if ($action == "update_watchlist") {
-        // Process watchlist update and then redirect to the watchlist page.
+        // Process watchlist update then redirect to the watchlist page.
         $watchlist = isset($_POST['watchlist']) && $_POST['watchlist'] == "1" ? 1 : 0;
         $watchlistRequest = [
             "type"    => "update_watchlist",
@@ -101,7 +101,7 @@ $movie = $response['movie'];
       <nav class="menu">
         <a href="movie_homepage.php">Home</a>
         <a href="movie_search.php">Search</a>
-        <?php if(isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true): ?>
+        <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true): ?>
           <a href="movie_watchlist.php">My Watchlist</a>
           <a href="movie_trivia.php">Trivia</a>
           <a href="logout.php">Logout</a>
@@ -131,9 +131,9 @@ $movie = $response['movie'];
       <p><strong>Release Date:</strong> <?php echo htmlspecialchars($movie["release_date"]); ?></p>
       <p><strong>Average Rating:</strong> <?php echo htmlspecialchars($movie["vote_average"]); ?>/10</p>
       
-      <?php if(isset($_SESSION['user_id'])): ?>
+      <?php if (isset($_SESSION['user_id'])): ?>
       <h3>Update Your Preferences</h3>
-      <?php if(!empty($feedbackMessage)) echo "<p>$feedbackMessage</p>"; ?>
+      <?php if (!empty($feedbackMessage)) echo "<p>$feedbackMessage</p>"; ?>
       
       <!-- Watchlist Form: Redirects to watchlist page -->
       <form method="POST" action="">
@@ -151,7 +151,7 @@ $movie = $response['movie'];
           <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
           <label for="rating">Rate (1 to 10):</label>
           <select name="rating" id="rating" required>
-              <?php for($i = 1; $i <= 10; $i++): ?>
+              <?php for ($i = 1; $i <= 10; $i++): ?>
                   <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
               <?php endfor; ?>
           </select>

@@ -49,7 +49,6 @@ $response = $client->send_request($request);
             <h2>Results for "<?php echo htmlspecialchars($movie_title); ?>"</h2>
             <?php
             if (isset($response["status"]) && $response["status"] === "success") {
-                echo "<br>";
                 if (isset($response["movies"]) && count($response["movies"]) > 0) {
                     echo "<ul style='list-style-type: none; padding: 0;'>";
                     foreach ($response["movies"] as $movie) {
@@ -65,7 +64,8 @@ $response = $client->send_request($request);
                         }
                         echo "<br>";
                         // Movie title as a hyperlink to movie_details.php with tmdb_id as a GET parameter.
-                        echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "' style='vertical-align: middle;'>" . htmlspecialchars($movie["title"]) . " (" . htmlspecialchars($movie["release_date"]) . ")" . "</a>";
+                        echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "' style='vertical-align: middle;'>" . htmlspecialchars($movie["title"]) . " (" . htmlspecialchars($movie["release_date"]) . ")""</a>";
+                        echo " (" . htmlspecialchars($movie["release_date"]) . ")";
                         echo "</li>";
                         echo "<br>";
                     }

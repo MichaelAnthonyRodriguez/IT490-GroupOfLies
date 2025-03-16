@@ -10,13 +10,25 @@ if (!isset($_SESSION['user_id'])) {
 }
 $user_id = $_SESSION['user_id'];
 
-// Initialize score if not already set.
+// Initialize current trivia score if not set.
 if (!isset($_SESSION['trivia_score'])) {
     $_SESSION['trivia_score'] = 0;
 }
 
 // Create a RabbitMQ client.
 $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
+
+// Request the user's trivia highscore.
+$highscoreRequest = [
+    "type"    => "get_trivia_highscore",
+    "user_id" => $user_id
+];
+$highscoreResponse = $client->send_request($highscoreRequest);
+if (isset($highscoreResponse['status']) && $highscoreResponse['status'] === "success") {
+    $triviaHighscore = $highscoreResponse['trivia_highscore'];
+} else {
+    $triviaHighscore = "N/A";
+}
 
 // Process answer submission.
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer'])) {
@@ -27,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer'])) {
         $feedback = "Correct! Your score is now " . $_SESSION['trivia_score'] . ".";
     } else {
         $feedback = "Incorrect! The correct answer was: " . htmlspecialchars($correct) . ".<br>Your final score is: " . $_SESSION['trivia_score'] . ".";
-        // Update high score if current score is higher.
+        // Update highscore if the current score is higher.
         $updateRequest = [
             "type"    => "update_trivia_highscore",
             "user_id" => $user_id,
@@ -36,14 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer'])) {
         $client->send_request($updateRequest);
         // Reset score for a new game.
         $_SESSION['trivia_score'] = 0;
-        // End game.
-        echo "<p>$feedback</p>";
-        echo '<p><a href="movie_trivia.php">Play Again</a></p>';
+        // Reload page to update the displayed highscore.
+        header("Location: movie_trivia.php");
         exit();
     }
 }
 
-// Request a random movie for trivia.
+// Request a random trivia movie.
 $triviaRequest = [
     "type" => "get_trivia_movie"
 ];
@@ -53,40 +64,31 @@ if (!isset($response['status']) || $response['status'] !== "success") {
 }
 $movie = $response['movie'];
 
-// Save correct title for checking answer.
+// Save correct title for later answer checking.
 $_SESSION['correct_title'] = $movie['title'];
-// Options: an array containing one correct title and three incorrect titles.
+// $movie['options'] should be an array with one correct and three incorrect titles.
 $options = $movie['options'];
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Cinemaniac</title>
-        <link rel="stylesheet" href="app/static/style.css"/>
-    </head>
-    <body>
-        <!-- header -->
-        <header>
-            <img id="logo" src="images/logo.png">
-            <h3>Cinemaniac</h3>
-            <nav class="menu">
-                <a href="movie_homepage.php">Home</a>
-                <a href="movie_search.php">Search</a>
-                <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true) { ?>
-                    <a href="movie_watchlist.php">My Watchlist</a>
-                    <a href="movie_trivia.php">Trivia</a>
-                    <a href="logout.php">Logout</a>
-                    <p>Welcome, <strong><?php echo htmlspecialchars($_SESSION['first_name'] . " " . $_SESSION['last_name']); ?></strong>!</p>
-                    <?php } else { ?>
-                    <a href="register.php">Register</a>
-                    <a href="login.php">Login</a>
-                <?php } ?>
-            </nav>
-        </header>
+  <head>
+    <meta charset="UTF-8">
+    <title>Movie Trivia</title>
+    <style>
+      body { background-color: #1d1d1d; color: #E7E7E7; font-family: sans-serif; }
+      .container { max-width: 800px; margin: 20px auto; padding: 20px; background-color: #333; border-radius: 8px; }
+      h1, h2, p { text-align: center; }
+      .options { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+      .option { background-color: #555; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; color: #E7E7E7; font-size: 16px; }
+      .option:hover { background-color: #777; }
+      form { text-align: center; margin-top: 20px; }
+    </style>
+  </head>
   <body>
     <div class="container">
       <h1>Movie Trivia</h1>
-      <h2>Score: <?php echo $_SESSION['trivia_score']; ?></h2>
+      <h2>Your High Score: <?php echo htmlspecialchars($triviaHighscore); ?></h2>
+      <h2>Current Score: <?php echo $_SESSION['trivia_score']; ?></h2>
       <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie['overview'])); ?></p>
       <form method="POST" action="movie_trivia.php">
         <div class="options">
@@ -94,11 +96,10 @@ $options = $movie['options'];
             <button class="option" type="submit" name="answer" value="<?php echo htmlspecialchars($option); ?>">
               <?php echo htmlspecialchars($option); ?>
             </button>
-            <br />
           <?php endforeach; ?>
         </div>
       </form>
-      <?php if(isset($feedback)): ?>
+      <?php if (isset($feedback)): ?>
         <p><?php echo $feedback; ?></p>
       <?php endif; ?>
     </div>

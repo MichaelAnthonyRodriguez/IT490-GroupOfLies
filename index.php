@@ -31,7 +31,6 @@ session_start();
         <!-- main elements -->
         <main>
             <p>Welcome to Cinemaniac!</p>
-            <p href="movie_homepage.php">Play</p>
         </main>
         
         <hr>

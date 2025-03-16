@@ -31,6 +31,12 @@ a {
     text-decoration: none;
     margin: 9px;
 }
+p {
+    display: block;
+    float: left;
+    text-decoration: none;
+    margin: 9px;
+}
 :hover {
     color: rgb(255, 163, 202);
 }
@@ -45,7 +51,7 @@ hr {
     margin: auto;
     margin-top: 10px;
     padding: 10px;
-    background-color: rgb(82, 8, 8);
+    background-color: rgb(237, 100, 100);
     width: 80%;
     border-radius: 20px;
 }
@@ -70,6 +76,7 @@ footer {
 form {
     text-align: right;
     margin-right: 40vw;
+    color: #752222;
 }
 input {
     border-style: none;

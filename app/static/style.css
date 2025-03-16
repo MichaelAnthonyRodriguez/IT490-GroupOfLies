@@ -125,3 +125,7 @@ form.link {
 #img2:hover {
     filter: contrast(200%);
 }
+
+input, textarea {
+    background-color: #7a3e3e;
+}

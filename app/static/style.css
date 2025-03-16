@@ -32,8 +32,10 @@ a {
     margin: 9px;
 }
 p {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    float: left;
+    text-decoration: none;
+    margin: 9px;
 }
 :hover {
     color: rgb(255, 163, 202);

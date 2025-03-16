@@ -88,7 +88,7 @@ $options = $movie['options'];
       <h1>Movie Trivia</h1>
       <h2>Score: <?php echo $_SESSION['trivia_score']; ?></h2>
       <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie['overview'])); ?></p>
-      
+      <br>
       <form method="POST" action="movie_trivia.php">
         <div class="options">
           <?php foreach ($options as $option): ?>

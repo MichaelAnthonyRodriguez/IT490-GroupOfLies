@@ -133,7 +133,7 @@ $movie = $response['movie'];
       <h3>Update Your Preferences</h3>
       <?php if(!empty($feedbackMessage)) echo "<p>$feedbackMessage</p>"; ?>
       
-      <!-- Watchlist Form: Redirects to watchlist page -->
+      <!-- Watchlist Form: Redirects to watchlist page after submission -->
       <form method="POST" action="">
           <input type="hidden" name="action" value="update_watchlist">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
@@ -142,7 +142,7 @@ $movie = $response['movie'];
           <input type="submit" value="Update Watchlist">
       </form>
       
-      <!-- Rating Form -->
+      <!-- Rating Form: Reloads same page -->
       <form method="POST" action="">
           <input type="hidden" name="action" value="update_rating">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
@@ -156,7 +156,7 @@ $movie = $response['movie'];
           <input type="submit" value="Submit Rating">
       </form>
       
-      <!-- Review Form -->
+      <!-- Review Form: Reloads same page -->
       <form method="POST" action="">
           <input type="hidden" name="action" value="update_review">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">

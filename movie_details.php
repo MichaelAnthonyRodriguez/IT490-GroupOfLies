@@ -130,19 +130,19 @@ $movie = $response['movie'];
       <?php endif; ?>
       
       <h3>User Reviews</h3>
-      <?php if (isset($movie["reviews"]) && is_array($movie["reviews"]) && count($movie["reviews"]) > 0): ?>
-          <ul style="list-style-type: none; padding: 0;">
-              <?php foreach ($movie["reviews"] as $rev): ?>
-                  <li style="margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
-                      <p><strong><?php echo htmlspecialchars($rev["username"]); ?></strong> on <?php echo htmlspecialchars($rev["review_date"]); ?></p>
-                      <p>Rating: <?php echo htmlspecialchars($rev["rating"]); ?>/10</p>
-                      <p><?php echo nl2br(htmlspecialchars($rev["review"])); ?></p>
-                  </li>
-              <?php endforeach; ?>
-          </ul>
-      <?php else: ?>
-          <p>No reviews yet.</p>
-      <?php endif; ?>
+        <?php if (isset($movie["reviews"]) && is_array($movie["reviews"]) && count($movie["reviews"]) > 0): ?>
+            <ul class="user-reviews">
+                <?php foreach ($movie["reviews"] as $rev): ?>
+                    <li>
+                        <p><strong><?php echo htmlspecialchars($rev["username"]); ?></strong> on <?php echo htmlspecialchars($rev["review_date"]); ?></p>
+                        <p>Rating: <?php echo htmlspecialchars($rev["rating"]); ?>/10</p>
+                        <p><?php echo nl2br(htmlspecialchars($rev["review"])); ?></p>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p>No reviews yet.</p>
+        <?php endif; ?>
     </main>
     <footer></footer>
   </body>

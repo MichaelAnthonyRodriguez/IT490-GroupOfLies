@@ -129,3 +129,19 @@ form.link {
 input, textarea, select {
     background-color: #7a3e3e;
 }
+
+ul.user-reviews {
+    display: block; /* Ensures the UL displays as a block element */
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+  
+  ul.user-reviews li {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #2d2d2d; /* A darker grey background */
+    border-radius: 5px;
+}

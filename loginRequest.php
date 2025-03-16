@@ -56,19 +56,20 @@ try {
 ?>
 <html>
     <head>
-        <title>Higher or Lower</title>
+        <title>Cinemaniac</title>
         <link rel="stylesheet" href="app/static/style.css"/>
     </head>
     <body>
         <!-- header -->
         <header>
             <img id="logo" src="images/logo.png">
-            <h3>Higher or Lower</h3>
+            <h3>Cinemaniac</h3>
             <nav class="menu">
-                <a href="index.php">Home</a>
-
+                <a href="movie_homepage.php">Home</a>
+                <a href="movie_search.php">Search</a>
                 <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true) { ?>
-                    <a href="highOrLow.php">Play</a>
+                    <a href="movie_watchlist.php">My Watchlist</a>
+                    <a href="movie_trivia.php">Trivia</a>
                     <a href="logout.php">Logout</a>
                     <p>Welcome, <strong><?php echo htmlspecialchars($_SESSION['first_name'] . " " . $_SESSION['last_name']); ?></strong>!</p>
                     <?php } else { ?>

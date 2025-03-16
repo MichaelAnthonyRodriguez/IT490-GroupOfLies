@@ -21,15 +21,11 @@ $request = [
 ];
 
 $feedbackMessage = "";
-
-// Process form submissions BEFORE fetching details.
+// Process watchlist form here (since it redirects).
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    // Determine which form was submitted by the hidden 'action' field.
     $action = $_POST['action'] ?? "";
-    
     if ($action == "update_watchlist") {
-        // Process watchlist update then redirect to the watchlist page.
         $watchlist = isset($_POST['watchlist']) && $_POST['watchlist'] == "1" ? 1 : 0;
         $watchlistRequest = [
             "type"    => "update_watchlist",
@@ -40,48 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
         $res = $client->send_request($watchlistRequest);
         header("Location: movie_watchlist.php");
         exit();
-    } elseif ($action == "update_rating") {
-        // Process rating update without redirecting.
-        $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
-        $ratingRequest = [
-            "type"    => "update_rating",
-            "user_id" => $user_id,
-            "tmdb_id" => $tmdb_id,
-            "rating"  => $rating
-        ];
-        $res = $client->send_request($ratingRequest);
-        if (isset($res["status"]) && $res["status"] === "success") {
-            $feedbackMessage .= "Rating submitted successfully. ";
-        } else {
-            $feedbackMessage .= "Rating error: " . htmlspecialchars($res["message"] ?? "Unknown error") . " ";
-        }
-    } elseif ($action == "update_review") {
-        // Process review update without redirecting.
-        $review = trim($_POST['review']);
-        if (empty($review)) {
-            $feedbackMessage .= "Review field cannot be empty. ";
-        } else {
-            $reviewRequest = [
-                "type"    => "update_review",
-                "user_id" => $user_id,
-                "tmdb_id" => $tmdb_id,
-                "review"  => $review
-            ];
-            $res = $client->send_request($reviewRequest);
-            if (isset($res["status"]) && $res["status"] === "success") {
-                $feedbackMessage .= "Review submitted successfully. ";
-            } else {
-                $feedbackMessage .= "Review error: " . htmlspecialchars($res["message"] ?? "Unknown error") . " ";
-            }
-        }
     }
-    // After processing rating or review, re-fetch full movie details.
-    $response = $client->send_request($request);
-} else {
-    // Normal fetch.
-    $response = $client->send_request($request);
 }
 
+// Fetch movie details (and reviews).
+$response = $client->send_request($request);
 if (!isset($response['status']) || $response['status'] !== "success") {
     die("Error retrieving movie details: " . htmlspecialchars($response['message'] ?? "Unknown error."));
 }
@@ -144,8 +103,8 @@ $movie = $response['movie'];
           <input type="submit" value="Update Watchlist">
       </form>
       
-      <!-- Rating Form: Submits without redirecting -->
-      <form method="POST" action="">
+      <!-- Rating Form: Submits to movie_details_request.php -->
+      <form method="POST" action="movie_details_request.php">
           <input type="hidden" name="action" value="update_rating">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
           <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
@@ -158,8 +117,8 @@ $movie = $response['movie'];
           <input type="submit" value="Submit Rating">
       </form>
       
-      <!-- Review Form: Submits without redirecting -->
-      <form method="POST" action="">
+      <!-- Review Form: Submits to movie_details_request.php -->
+      <form method="POST" action="movie_details_request.php">
           <input type="hidden" name="action" value="update_review">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
           <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">

@@ -137,6 +137,7 @@ $movie = $response['movie'];
                         <p><strong><?php echo htmlspecialchars($rev["username"]); ?></strong> on <?php echo htmlspecialchars($rev["review_date"]); ?></p>
                         <p>Rating: <?php echo htmlspecialchars($rev["rating"]); ?>/10</p>
                         <p><?php echo nl2br(htmlspecialchars($rev["review"])); ?></p>
+                        <br />
                     </ul>
                 <?php endforeach; ?>
             </ul>

@@ -126,6 +126,6 @@ form.link {
     filter: contrast(200%);
 }
 
-input, textarea {
+input, textarea, select {
     background-color: #7a3e3e;
 }

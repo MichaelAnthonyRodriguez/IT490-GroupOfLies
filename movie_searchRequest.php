@@ -67,6 +67,7 @@ $response = $client->send_request($request);
                         echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "' style='vertical-align: middle;'>" . htmlspecialchars($movie["title"]) . "</a>";
                         echo " (" . htmlspecialchars($movie["release_date"]) . ")";
                         echo "</li>";
+                        echo "<br>";
                     }
                     echo "</ul>";
                 } else {

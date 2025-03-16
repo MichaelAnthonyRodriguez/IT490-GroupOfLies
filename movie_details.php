@@ -165,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
       <?php else: ?>
           <p>Please <a href="login.php">login</a> to update your preferences.</p>
       <?php endif; ?>
-      
+      <br>
       <h3>User Reviews</h3>
       <?php if (isset($movie["reviews"]) && is_array($movie["reviews"]) && count($movie["reviews"]) > 0): ?>
           <ul style="list-style-type: none; padding: 0;">

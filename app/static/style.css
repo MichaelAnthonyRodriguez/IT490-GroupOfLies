@@ -146,5 +146,6 @@ ul.user-reviews {
     border-radius: 5px;
 }
 button {
+    display: block;
     float: left;
 }

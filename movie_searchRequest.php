@@ -57,7 +57,6 @@ $response = $client->send_request($request);
                         if (!empty($movie['poster_path'])) {
                             $posterUrl = "https://image.tmdb.org/t/p/w92" . $movie['poster_path'];
                         }
-                        echo "<li style='margin-bottom: 15px;'>";
                         // Display the poster thumbnail if available.
                         if ($posterUrl) {
                             echo "<img src='" . htmlspecialchars($posterUrl) . "' alt='Poster for " . htmlspecialchars($movie["title"]) . "' style='vertical-align: left; margin-right: 10px;'>";
@@ -66,7 +65,6 @@ $response = $client->send_request($request);
                         // Movie title as a hyperlink to movie_details.php with tmdb_id as a GET parameter.
                         echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "' style='vertical-align: middle;'>" . htmlspecialchars($movie["title"]) . "</a>";
                         echo " (" . htmlspecialchars($movie["release_date"]) . ")";
-                        echo "</li>";
                         echo "<br>";
                     }
                     echo "</ul>";

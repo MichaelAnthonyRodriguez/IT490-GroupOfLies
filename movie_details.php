@@ -1,9 +1,11 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 session_start();
 require_once 'vendor/autoload.php';
 require_once 'rabbitMQLib.inc';
 
-// Check if tmdb_id is provided via GET
+// Ensure tmdb_id is provided via GET.
 if (!isset($_GET['tmdb_id'])) {
     die("Error: No movie specified.");
 }
@@ -12,38 +14,50 @@ $tmdb_id = intval($_GET['tmdb_id']);
 // Create a RabbitMQ client using your configuration.
 $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
 
-// Get movie details request.
-$detailsRequest = [
-    "type"    => "movie_details",
+// Build the request for full movie details (details + reviews).
+$request = [
+    "type"    => "full_movie_details",
     "tmdb_id" => $tmdb_id
 ];
-$detailsResponse = $client->send_request($detailsRequest);
-if (!isset($detailsResponse['status']) || $detailsResponse['status'] !== "success") {
-    die("Error retrieving movie details: " . htmlspecialchars($detailsResponse['message'] ?? "Unknown error."));
+$response = $client->send_request($request);
+if (!isset($response['status']) || $response['status'] !== "success") {
+    die("Error retrieving movie details: " . htmlspecialchars($response['message'] ?? "Unknown error."));
 }
-$movie = $detailsResponse['movie'];
+$movie = $response['movie'];
 
-// Get all reviews for this movie.
-$getReviewsRequest = [
-    "type"    => "get_reviews",
-    "tmdb_id" => $tmdb_id
-];
-$getReviewsResponse = $client->send_request($getReviewsRequest);
-$reviews = [];
-$reviewsMessage = "";
-if (isset($getReviewsResponse["status"]) && $getReviewsResponse["status"] === "success") {
-    if (isset($getReviewsResponse["reviews"]) && count($getReviewsResponse["reviews"]) > 0) {
-        $reviews = $getReviewsResponse["reviews"];
+// Process review form submission, if any.
+$feedbackMessage = "";
+if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
+    $watchlist = isset($_POST['watchlist']) && $_POST['watchlist'] == "1" ? 1 : 0;
+    $rating    = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
+    $review    = isset($_POST['review']) ? trim($_POST['review']) : "";
+    $user_id   = $_SESSION['user_id'];
+    
+    $addReviewRequest = [
+        "type"      => "add_review",
+        "user_id"   => $user_id,
+        "tmdb_id"   => $tmdb_id,
+        "watchlist" => $watchlist,
+        "rating"    => $rating,
+        "review"    => $review
+    ];
+    $addReviewResponse = $client->send_request($addReviewRequest);
+    if (isset($addReviewResponse["status"]) && $addReviewResponse["status"] === "success") {
+        $feedbackMessage = "Review submitted successfully.";
     } else {
-        // No reviews returned.
-        $reviewsMessage = "No reviews found for this movie.";
+        $feedbackMessage = "Error: " . htmlspecialchars($addReviewResponse["message"] ?? "Unknown error");
     }
-} else {
-    $reviewsMessage = htmlspecialchars($getReviewsResponse["message"] ?? "Unknown error retrieving reviews.");
+    // Re-fetch full details to update the reviews.
+    $response = $client->send_request($request);
+    if (isset($response["status"]) && $response["status"] === "success") {
+        $movie = $response["movie"];
+    }
 }
 ?>
+<!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
     <title><?php echo htmlspecialchars($movie["title"]); ?> - Details</title>
     <link rel="stylesheet" href="app/static/style.css"/>
   </head>
@@ -54,7 +68,7 @@ if (isset($getReviewsResponse["status"]) && $getReviewsResponse["status"] === "s
       <nav class="menu">
         <a href="movie_homepage.php">Home</a>
         <a href="movie_search.php">Search</a>
-        <?php if(isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true): ?>
+        <?php if (isset($_SESSION['is_valid_admin']) && $_SESSION['is_valid_admin'] === true): ?>
           <a href="movie_watchlist.php">My Watchlist</a>
           <a href="movie_trivia.php">Trivia</a>
           <a href="logout.php">Logout</a>
@@ -68,13 +82,13 @@ if (isset($getReviewsResponse["status"]) && $getReviewsResponse["status"] === "s
     <main>
       <h2><?php echo htmlspecialchars($movie["title"]); ?></h2>
       <?php
-          // Build full poster URL (for example, using w342)
+          // Build full poster URL (using size w342).
           $posterUrl = "";
           if (!empty($movie["poster_path"])) {
               $posterUrl = "https://image.tmdb.org/t/p/w342" . $movie["poster_path"];
           }
       ?>
-      <?php if(!empty($posterUrl)): ?>
+      <?php if (!empty($posterUrl)): ?>
           <img src="<?php echo htmlspecialchars($posterUrl); ?>" alt="Poster for <?php echo htmlspecialchars($movie["title"]); ?>" style="max-width:300px;">
       <?php else: ?>
           <p>No poster available.</p>
@@ -84,9 +98,9 @@ if (isset($getReviewsResponse["status"]) && $getReviewsResponse["status"] === "s
       <p><strong>Release Date:</strong> <?php echo htmlspecialchars($movie["release_date"]); ?></p>
       <p><strong>Average Rating:</strong> <?php echo htmlspecialchars($movie["vote_average"]); ?>/10</p>
       
-      <!-- Review and Watchlist form -->
       <?php if(isset($_SESSION['user_id'])): ?>
       <h3>Add to Watchlist / Rate / Review</h3>
+      <?php if(!empty($feedbackMessage)) echo "<p>$feedbackMessage</p>"; ?>
       <form method="POST" action="">
           <label>
               <input type="checkbox" name="watchlist" value="1"> Add to Watchlist
@@ -101,48 +115,14 @@ if (isset($getReviewsResponse["status"]) && $getReviewsResponse["status"] === "s
           <textarea id="review" name="review" rows="5" cols="50" placeholder="Enter your review here..."></textarea><br><br>
           <input type="submit" value="Submit Review">
       </form>
+      <?php else: ?>
+          <p>Please <a href="login.php">login</a> to add to your watchlist, rate, or review this movie.</p>
       <?php endif; ?>
       
-      <!-- Process the review form submission via RabbitMQ -->
-      <?php
-      $feedbackMessage = "";
-      if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
-          $watchlist = isset($_POST['watchlist']) && $_POST['watchlist'] == "1" ? 1 : 0;
-          $rating    = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
-          $review    = isset($_POST['review']) ? trim($_POST['review']) : "";
-          $user_id   = $_SESSION['user_id'];
-          
-          $addReviewRequest = [
-              "type"      => "add_review",
-              "user_id"   => $user_id,
-              "tmdb_id"   => $tmdb_id,
-              "watchlist" => $watchlist,
-              "rating"    => $rating,
-              "review"    => $review
-          ];
-          $addReviewResponse = $client->send_request($addReviewRequest);
-          if (isset($addReviewResponse["status"]) && $addReviewResponse["status"] === "success") {
-              $feedbackMessage = "Review submitted successfully.";
-          } else {
-              $feedbackMessage = "Error: " . htmlspecialchars($addReviewResponse["message"] ?? "Unknown error");
-          }
-          // Reload the reviews after submission.
-          $getReviewsResponse = $client->send_request($getReviewsRequest);
-          if (isset($getReviewsResponse["status"]) && $getReviewsResponse["status"] === "success") {
-              $reviews = $getReviewsResponse["reviews"];
-          }
-      }
-      ?>
-      
-      <?php if(!empty($feedbackMessage)): ?>
-          <p><?php echo $feedbackMessage; ?></p>
-      <?php endif; ?>
-      
-      <!-- Display all reviews for this movie -->
       <h3>User Reviews</h3>
-      <?php if (!empty($reviews) && is_array($reviews) && count($reviews) > 0): ?>
+      <?php if (isset($movie["reviews"]) && is_array($movie["reviews"]) && count($movie["reviews"]) > 0): ?>
           <ul style="list-style-type: none; padding: 0;">
-              <?php foreach ($reviews as $rev): ?>
+              <?php foreach ($movie["reviews"] as $rev): ?>
                   <li style="margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
                       <p><strong><?php echo htmlspecialchars($rev["username"]); ?></strong> on <?php echo htmlspecialchars($rev["review_date"]); ?></p>
                       <p>Rating: <?php echo htmlspecialchars($rev["rating"]); ?>/10</p>

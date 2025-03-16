@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
     $action = $_POST['action'] ?? "";
     
     if ($action == "update_watchlist") {
+        // Process watchlist update and then redirect to the watchlist page.
         $watchlist = isset($_POST['watchlist']) && $_POST['watchlist'] == "1" ? 1 : 0;
         $watchlistRequest = [
             "type"    => "update_watchlist",
@@ -37,10 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
             "watchlist" => $watchlist
         ];
         $res = $client->send_request($watchlistRequest);
-        // Redirect to the watchlist page after updating watchlist.
         header("Location: movie_watchlist.php");
         exit();
     } elseif ($action == "update_rating") {
+        // Process rating update without redirecting.
         $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
         $ratingRequest = [
             "type"    => "update_rating",
@@ -55,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
             $feedbackMessage .= "Rating error: " . htmlspecialchars($res["message"] ?? "Unknown error") . " ";
         }
     } elseif ($action == "update_review") {
+        // Process review update without redirecting.
         $review = trim($_POST['review']);
         if (empty($review)) {
             $feedbackMessage .= "Review field cannot be empty. ";
@@ -73,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
             }
         }
     }
-    // After processing rating or review, re-fetch full movie details to update the page.
+    // After processing rating or review, re-fetch full movie details.
     $response = $client->send_request($request);
 } else {
     // Normal fetch.
@@ -142,7 +144,7 @@ $movie = $response['movie'];
           <input type="submit" value="Update Watchlist">
       </form>
       
-      <!-- Rating Form: Reloads same page after submission -->
+      <!-- Rating Form: Submits without redirecting -->
       <form method="POST" action="">
           <input type="hidden" name="action" value="update_rating">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
@@ -156,7 +158,7 @@ $movie = $response['movie'];
           <input type="submit" value="Submit Rating">
       </form>
       
-      <!-- Review Form: Reloads same page after submission -->
+      <!-- Review Form: Submits without redirecting -->
       <form method="POST" action="">
           <input type="hidden" name="action" value="update_review">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">

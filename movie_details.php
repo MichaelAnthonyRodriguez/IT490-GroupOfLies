@@ -1,4 +1,5 @@
 <?php
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
 session_start();
 require_once 'vendor/autoload.php';
@@ -13,25 +14,21 @@ $tmdb_id = intval($_GET['tmdb_id']);
 // Create a RabbitMQ client.
 $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
 
-// Fetch full movie details (details + reviews) using the combined request.
+// Build the request for full movie details (details + reviews).
 $request = [
     "type"    => "full_movie_details",
     "tmdb_id" => $tmdb_id
 ];
-$response = $client->send_request($request);
-if (!isset($response['status']) || $response['status'] !== "success") {
-    die("Error retrieving movie details: " . htmlspecialchars($response['message'] ?? "Unknown error."));
-}
-$movie = $response['movie'];
 
+// Process form submissions (if any) before fetching details.
 $feedbackMessage = "";
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    // Identify which form was submitted by the 'action' field.
+    // Determine which form was submitted by the hidden 'action' field.
     $action = $_POST['action'] ?? "";
-    if ($action == "watchlist") {
-        // Update watchlist status.
-        $watchlist = 1; // For example, adding to watchlist. (You might later toggle to remove.)
+    
+    if ($action == "update_watchlist") {
+        $watchlist = isset($_POST['watchlist']) && $_POST['watchlist'] == "1" ? 1 : 0;
         $watchlistRequest = [
             "type"    => "update_watchlist",
             "user_id" => $user_id,
@@ -44,9 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
         } else {
             $feedbackMessage .= "Watchlist error: " . htmlspecialchars($res["message"] ?? "Unknown error") . " ";
         }
-    } elseif ($action == "rate") {
-        // Update rating.
-        $rating = intval($_POST['rating']);
+    } elseif ($action == "update_rating") {
+        $rating = isset($_POST['rating']) ? intval($_POST['rating']) : 0;
         $ratingRequest = [
             "type"    => "update_rating",
             "user_id" => $user_id,
@@ -59,8 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
         } else {
             $feedbackMessage .= "Rating error: " . htmlspecialchars($res["message"] ?? "Unknown error") . " ";
         }
-    } elseif ($action == "review") {
-        // Ensure review is not empty.
+    } elseif ($action == "update_review") {
         $review = trim($_POST['review']);
         if (empty($review)) {
             $feedbackMessage .= "Review field cannot be empty. ";
@@ -79,12 +74,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
             }
         }
     }
-    // Re-fetch full details (including reviews) after any update.
+    // After processing, re-fetch full movie details to update the page.
     $response = $client->send_request($request);
-    if (isset($response["status"]) && $response["status"] === "success") {
-        $movie = $response["movie"];
-    }
+} else {
+    // Normal fetch
+    $response = $client->send_request($request);
 }
+
+if (!isset($response['status']) || $response['status'] !== "success") {
+    die("Error retrieving movie details: " . htmlspecialchars($response['message'] ?? "Unknown error."));
+}
+$movie = $response['movie'];
 ?>
 <!DOCTYPE html>
 <html>
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
     <main>
       <h2><?php echo htmlspecialchars($movie["title"]); ?></h2>
       <?php
-          // Build full poster URL (using size w342)
+          // Build full poster URL (using size w342).
           $posterUrl = "";
           if (!empty($movie["poster_path"])) {
               $posterUrl = "https://image.tmdb.org/t/p/w342" . $movie["poster_path"];
@@ -136,15 +136,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
       
       <!-- Watchlist Form -->
       <form method="POST" action="">
-          <input type="hidden" name="action" value="watchlist">
+          <input type="hidden" name="action" value="update_watchlist">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
-          <input type="submit" value="Add to Watchlist">
+          <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
+          <input type="checkbox" name="watchlist" value="1"> Add to Watchlist<br>
+          <input type="submit" value="Update Watchlist">
       </form>
       
       <!-- Rating Form -->
       <form method="POST" action="">
-          <input type="hidden" name="action" value="rate">
+          <input type="hidden" name="action" value="update_rating">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
+          <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
           <label for="rating">Rate (1 to 10):</label>
           <select name="rating" id="rating" required>
               <?php for($i = 1; $i <= 10; $i++): ?>
@@ -156,17 +159,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['user_id'])) {
       
       <!-- Review Form -->
       <form method="POST" action="">
-          <input type="hidden" name="action" value="review">
+          <input type="hidden" name="action" value="update_review">
           <input type="hidden" name="tmdb_id" value="<?php echo $tmdb_id; ?>">
+          <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
           <label for="review">Write a review:</label><br>
-          <textarea id="review" name="review" rows="5" cols="50" required placeholder="Enter your review here..."></textarea><br>
+          <textarea id="review" name="review" rows="5" cols="50" placeholder="Enter your review here..." required></textarea><br>
           <input type="submit" value="Submit Review">
       </form>
       <?php else: ?>
           <p>Please <a href="login.php">login</a> to update your preferences.</p>
       <?php endif; ?>
-      <br>
-      <br/>
+      
       <h3>User Reviews</h3>
       <?php if (isset($movie["reviews"]) && is_array($movie["reviews"]) && count($movie["reviews"]) > 0): ?>
           <ul style="list-style-type: none; padding: 0;">

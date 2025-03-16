@@ -131,13 +131,15 @@ $movie = $response['movie'];
       
       <h3>User Reviews</h3>
         <?php if (isset($movie["reviews"]) && is_array($movie["reviews"]) && count($movie["reviews"]) > 0): ?>
-            <li class="user-reviews">
+            <ul class="user-reviews">
                 <?php foreach ($movie["reviews"] as $rev): ?>
+                    <ul>
                         <p><strong><?php echo htmlspecialchars($rev["username"]); ?></strong> on <?php echo htmlspecialchars($rev["review_date"]); ?></p>
                         <p>Rating: <?php echo htmlspecialchars($rev["rating"]); ?>/10</p>
                         <p><?php echo nl2br(htmlspecialchars($rev["review"])); ?></p>
+                    </ul>
                 <?php endforeach; ?>
-                </li>
+            </ul>
         <?php else: ?>
             <p>No reviews yet.</p>
         <?php endif; ?>

@@ -146,6 +146,7 @@ ul.user-reviews {
     border-radius: 5px;
 }
 button {
-    display: list-item;
-    float: left;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }

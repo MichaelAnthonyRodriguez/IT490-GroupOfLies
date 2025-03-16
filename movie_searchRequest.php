@@ -49,6 +49,7 @@ $response = $client->send_request($request);
             <h2>Results for "<?php echo htmlspecialchars($movie_title); ?>"</h2>
             <?php
             if (isset($response["status"]) && $response["status"] === "success") {
+                echo "<br>";
                 if (isset($response["movies"]) && count($response["movies"]) > 0) {
                     echo "<ul style='list-style-type: none; padding: 0;'>";
                     foreach ($response["movies"] as $movie) {

@@ -81,7 +81,7 @@ form {
 input {
     border-style: none;
     margin: 10px;
-    color: #1d1d1d;
+    color: rgb(231, 231, 231);
 }
 #submit {
     margin-right: 10vw;

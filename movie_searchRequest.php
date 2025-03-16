@@ -64,7 +64,7 @@ $response = $client->send_request($request);
                         }
                         echo "<br>";
                         // Movie title as a hyperlink to movie_details.php with tmdb_id as a GET parameter.
-                        echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . ">" . htmlspecialchars($movie["title"]) . "</a>";
+                        echo "<a href='movie_details.php?tmdb_id=" . urlencode($movie['tmdb_id']) . "'>" . htmlspecialchars($movie["title"]) . "</a>";
                         echo " (" . htmlspecialchars($movie["release_date"]) . ")";
                         echo "</li>";
                         echo "<br>";

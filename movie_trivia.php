@@ -18,6 +18,18 @@ if (!isset($_SESSION['trivia_score'])) {
 // Create a RabbitMQ client.
 $client = new rabbitMQClient("testRabbitMQ.ini", "testServer");
 
+// Request the user's trivia highscore.
+$highscoreRequest = [
+    "type"    => "get_trivia_highscore",
+    "user_id" => $user_id
+];
+$highscoreResponse = $client->send_request($highscoreRequest);
+if (isset($highscoreResponse['status']) && $highscoreResponse['status'] === "success") {
+    $triviaHighscore = $highscoreResponse['trivia_highscore'];
+} else {
+    $triviaHighscore = "N/A";
+}
+
 // Process answer submission.
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer'])) {
     $selected = $_POST['answer'];
@@ -36,9 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['answer'])) {
         $client->send_request($updateRequest);
         // Reset score for a new game.
         $_SESSION['trivia_score'] = 0;
-        // End game.
-        echo "<p>$feedback</p>";
-        echo '<p><a href="movie_trivia.php">Play Again</a></p>';
+        // Reload the page to update the displayed highscore.
+        header("Location: movie_trivia.php");
         exit();
     }
 }
@@ -83,25 +94,25 @@ $options = $movie['options'];
                 <?php } ?>
             </nav>
         </header>
-  <body>
-    <div class="container">
-      <h1>Movie Trivia</h1>
-      <h2>Score: <?php echo $_SESSION['trivia_score']; ?></h2>
-      <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie['overview'])); ?></p>
-      <br>
-      <form method="POST" action="movie_trivia.php">
-        <div class="options">
-          <?php foreach ($options as $option): ?>
-            <button class="option" type="submit" name="answer" value="<?php echo htmlspecialchars($option); ?>">
-              <?php echo htmlspecialchars($option); ?>
-            </button>
-            <br />
-          <?php endforeach; ?>
+    <body>
+        <div class="container">
+            <h1>Movie Trivia</h1>
+            <h2>High Score: <?php echo htmlspecialchars($triviaHighscore); ?></h2>
+            <h2>Score: <?php echo $_SESSION['trivia_score']; ?></h2>
+            <p><strong>Overview:</strong><br><?php echo nl2br(htmlspecialchars($movie['overview'])); ?></p>
+            <br>
+            <form method="POST" action="movie_trivia.php">
+                <div class="options">
+                    <?php foreach ($options as $option): ?>
+                        <button class="option" type="submit" name="answer" value="<?php echo htmlspecialchars($option); ?>">
+                            <?php echo htmlspecialchars($option); ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+            </form>
+            <?php if(isset($feedback)): ?>
+                <p><?php echo $feedback; ?></p>
+            <?php endif; ?>
         </div>
-      </form>
-      <?php if(isset($feedback)): ?>
-        <p><?php echo $feedback; ?></p>
-      <?php endif; ?>
-    </div>
-  </body>
+    </body>
 </html>

@@ -126,7 +126,7 @@ $movie = $response['movie'];
           <input type="submit" value="Submit Review">
       </form>
       <?php else: ?>
-          <p>Please <a href="login.php">login</a> to update your preferences.</p>
+          <a href="login.php">login to add review</a>
       <?php endif; ?>
       <br>
       <br/>

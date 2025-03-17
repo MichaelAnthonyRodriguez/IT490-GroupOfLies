@@ -126,10 +126,8 @@ $movie = $response['movie'];
           <input type="submit" value="Submit Review">
       </form>
       <?php else: ?>
-          <a href="login.php">login to add review</a>
+          <a href="login.php">login to add review</a><br>
       <?php endif; ?>
-      <br>
-      <br/>
       <h3>User Reviews</h3>
         <?php if (isset($movie["reviews"]) && is_array($movie["reviews"]) && count($movie["reviews"]) > 0): ?>
             <ul class="user-reviews">

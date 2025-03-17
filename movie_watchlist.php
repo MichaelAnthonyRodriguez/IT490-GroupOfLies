@@ -62,13 +62,16 @@ $response = $client->send_request($request);
             ?>
               <li style="margin-bottom: 15px;">
                 <?php if ($posterUrl): ?>
-                  <img src="<?php echo htmlspecialchars($posterUrl); ?>" alt="Poster for <?php echo htmlspecialchars($movie["title"]); ?>" style="max-width: 100px; vertical-align: middle; margin-right: 10px;">
+                  <img src="<?php echo htmlspecialchars($posterUrl); ?>" alt="Poster for <?php echo htmlspecialchars($movie["title"]); ?>" style="max-width: 100px; vertical-align: left; margin-right: 10px;">
                 <?php endif; ?>
+                <br>
                 <a href="movie_details.php?tmdb_id=<?php echo urlencode($movie["tmdb_id"]); ?>">
                   <?php echo htmlspecialchars($movie["title"]); ?>
                 </a>
+                <br>
                 <span style="vertical-align: middle;"> (Released: <?php echo htmlspecialchars($movie["release_date"]); ?>, Rating: <?php echo htmlspecialchars($movie["vote_average"]); ?>/10)</span>
               </li>
+              <br>
             <?php endforeach; ?>
           </ul>
         <?php else: ?>

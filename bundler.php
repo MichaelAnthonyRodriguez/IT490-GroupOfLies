@@ -1,6 +1,6 @@
 <?php
 // 1. Read .ini config
-$config = parse_ini_file("config.ini", true);
+$config = parse_ini_file("testRabbitMQ.ini", true);
 $files = $config['files'];       // Files to bundle
 $processes = $config['processes']; 
 
